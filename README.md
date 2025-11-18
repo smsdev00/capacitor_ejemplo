@@ -1,7 +1,7 @@
 
 # Procedimiento Formal: Capacitor a APK de Producción (Release)
 
-## Este procedimiento garantiza la obtención de un archivo ejecutable APK firmado (release) listo para su distribución, utilizando únicamente formato Markdown y terminología formal.
+## Este procedimiento garantiza la obtención de un archivo ejecutable APK firmado (release) listo para su distribución
 
 ## Requisitos
 
