@@ -11,7 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "@capacitor/android": "^7.4.4",
+    "@capacitor/camera": "^7.0.2",
     "@capacitor/cli": "^7.4.4",
-    "@capacitor/core": "^7.4.4"
+    "@capacitor/core": "^7.4.4",
+    "@capacitor/motion": "^7.0.1"
   }
 }
