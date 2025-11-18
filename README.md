@@ -1,5 +1,5 @@
 
-# Procedimiento para obtener una APK de de Producción (Release) a partir de un archivo html estático
+# Procedimiento para obtener una APK de Producción (Release) a partir de un archivo html estático
 
 ## Este procedimiento garantiza la obtención de un archivo ejecutable APK firmado (release) listo para su distribución
 
