@@ -1,19 +1,26 @@
 {
-  "name": "test_capacitor",
+  "name": "capacitor-hardware-demo",
   "version": "1.0.0",
-  "description": "",
+  "description": "Aplicación demo con acceso a cámara y giroscopio",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "sync": "npx cap sync android"
   },
-  "keywords": [],
+  "keywords": [
+    "capacitor",
+    "android",
+    "camera",
+    "motion"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "@capacitor/android": "^7.4.4",
-    "@capacitor/camera": "^7.0.2",
-    "@capacitor/cli": "^7.4.4",
-    "@capacitor/core": "^7.4.4",
-    "@capacitor/motion": "^7.0.1"
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/camera": "^6.0.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/motion": "^6.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
   }
 }

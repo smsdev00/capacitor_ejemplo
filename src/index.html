@@ -170,9 +170,8 @@
   <div class="container">
     <h1>📱 Hardware Demo</h1>
 
-    <!-- Sección de Cámara -->
     <div class="card">
-      <h2><span class="icon">📷</span> Cámara</h2>
+      <h2>ámara</h2>
       <button id="takePictureBtn" onclick="takePicture()">
         Tomar Foto
       </button>
@@ -184,9 +183,8 @@
       </div>
     </div>
 
-    <!-- Sección de Giroscopio -->
     <div class="card">
-      <h2><span class="icon">🎯</span> Sensor de Movimiento</h2>
+      <h2>Sensor de Movimiento</h2>
       <div class="button-group">
         <button id="startMotionBtn" onclick="startMotion()">
           Iniciar Sensor
@@ -227,119 +225,100 @@
     </div>
   </div>
 
-  <!-- Importar Capacitor Core -->
-  <script type="module">
-    import { Capacitor } from 'https://cdn.jsdelivr.net/npm/@capacitor/core@6.0.0/dist/esm/index.js';
-    import { Camera, CameraResultType, CameraSource } from 'https://cdn.jsdelivr.net/npm/@capacitor/camera@6.0.0/dist/esm/index.js';
-    import { Motion } from 'https://cdn.jsdelivr.net/npm/@capacitor/motion@6.0.0/dist/esm/index.js';
 
-    // Variable global para el listener del sensor
-    let motionListener = null;
+<script src="capacitor.js"></script>
+<script>
+  const { Camera } = Capacitor.Plugins;
+  const { DeviceMotionEvent } = window;
+  
+  let motionActive = false;
+  let motionInterval = null;
 
-    // Función para tomar foto
-    window.takePicture = async function() {
-      const button = document.getElementById('takePictureBtn');
-      const preview = document.getElementById('photoPreview');
-      const placeholder = document.getElementById('photoPlaceholder');
+  async function takePicture() {
+    const button = document.getElementById('takePictureBtn');
+    const preview = document.getElementById('photoPreview');
+    const placeholder = document.getElementById('photoPlaceholder');
 
-      try {
-        button.disabled = true;
-        button.textContent = 'Abriendo cámara...';
+    try {
+      button.disabled = true;
+      button.textContent = 'Abriendo cámara...';
 
-        const image = await Camera.getPhoto({
-          quality: 90,
-          allowEditing: false,
-          resultType: CameraResultType.DataUrl,
-          source: CameraSource.Camera
-        });
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: 'DataUrl',
+        source: 'CAMERA',
+        correctOrientation: true,  // ESTO ARREGLA LA ROTACIÓN
+        saveToGallery: true
+      });
 
-        // Mostrar la imagen
-        preview.src = image.dataUrl;
-        preview.classList.add('show');
-        placeholder.style.display = 'none';
+      preview.src = image.dataUrl;
+      preview.classList.add('show');
+      placeholder.style.display = 'none';
+      button.textContent = 'Tomar Otra Foto';
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error: ' + error.message);
+      button.textContent = 'Tomar Foto';
+    } finally {
+      button.disabled = false;
+    }
+  }
 
-        button.textContent = 'Tomar Otra Foto';
-      } catch (error) {
-        console.error('Error al tomar la foto:', error);
-        alert('Error: ' + error.message);
-        button.textContent = 'Tomar Foto';
-      } finally {
-        button.disabled = false;
-      }
-    };
+  function startMotion() {
+    const startBtn = document.getElementById('startMotionBtn');
+    const stopBtn = document.getElementById('stopMotionBtn');
+    const status = document.getElementById('motionStatus');
 
-    // Función para iniciar el sensor de movimiento
-    window.startMotion = async function() {
-      const startBtn = document.getElementById('startMotionBtn');
-      const stopBtn = document.getElementById('stopMotionBtn');
-      const status = document.getElementById('motionStatus');
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    motionActive = true;
+    status.textContent = 'Sensor activo - Mueve el dispositivo';
+    status.className = 'status active';
 
-      try {
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
-        status.textContent = 'Iniciando sensor...';
-        status.className = 'status';
+    // Usar DeviceMotionEvent nativo del navegador
+    window.addEventListener('devicemotion', handleMotion);
+    window.addEventListener('deviceorientation', handleOrientation);
+  }
 
-        // Listener para aceleración
-        motionListener = await Motion.addListener('accel', (event) => {
-          document.getElementById('accelX').textContent = event.acceleration.x.toFixed(2);
-          document.getElementById('accelY').textContent = event.acceleration.y.toFixed(2);
-          document.getElementById('accelZ').textContent = event.acceleration.z.toFixed(2);
-        });
+  function handleMotion(event) {
+    if (!motionActive) return;
+    
+    const acc = event.accelerationIncludingGravity;
+    document.getElementById('accelX').textContent = (acc.x || 0).toFixed(2);
+    document.getElementById('accelY').textContent = (acc.y || 0).toFixed(2);
+    document.getElementById('accelZ').textContent = (acc.z || 0).toFixed(2);
+  }
 
-        // Listener para rotación (giroscopio)
-        await Motion.addListener('orientation', (event) => {
-          document.getElementById('rotAlpha').textContent = (event.alpha || 0).toFixed(2);
-          document.getElementById('rotBeta').textContent = (event.beta || 0).toFixed(2);
-          document.getElementById('rotGamma').textContent = (event.gamma || 0).toFixed(2);
-        });
+  function handleOrientation(event) {
+    if (!motionActive) return;
+    
+    document.getElementById('rotAlpha').textContent = (event.alpha || 0).toFixed(2);
+    document.getElementById('rotBeta').textContent = (event.beta || 0).toFixed(2);
+    document.getElementById('rotGamma').textContent = (event.gamma || 0).toFixed(2);
+  }
 
-        status.textContent = 'Sensor activo - Mueve el dispositivo';
-        status.className = 'status active';
-      } catch (error) {
-        console.error('Error al iniciar el sensor:', error);
-        alert('Error: ' + error.message);
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
-        status.textContent = 'Error al iniciar sensor';
-        status.className = 'status inactive';
-      }
-    };
+  function stopMotion() {
+    const startBtn = document.getElementById('startMotionBtn');
+    const stopBtn = document.getElementById('stopMotionBtn');
+    const status = document.getElementById('motionStatus');
 
-    // Función para detener el sensor
-    window.stopMotion = async function() {
-      const startBtn = document.getElementById('startMotionBtn');
-      const stopBtn = document.getElementById('stopMotionBtn');
-      const status = document.getElementById('motionStatus');
+    motionActive = false;
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+    status.textContent = 'Sensor detenido';
+    status.className = 'status inactive';
 
-      try {
-        if (motionListener) {
-          await motionListener.remove();
-          motionListener = null;
-        }
-        
-        await Motion.removeAllListeners();
+    window.removeEventListener('devicemotion', handleMotion);
+    window.removeEventListener('deviceorientation', handleOrientation);
 
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
-        status.textContent = 'Sensor detenido';
-        status.className = 'status inactive';
-
-        // Resetear valores
-        document.getElementById('accelX').textContent = '0.00';
-        document.getElementById('accelY').textContent = '0.00';
-        document.getElementById('accelZ').textContent = '0.00';
-        document.getElementById('rotAlpha').textContent = '0.00';
-        document.getElementById('rotBeta').textContent = '0.00';
-        document.getElementById('rotGamma').textContent = '0.00';
-      } catch (error) {
-        console.error('Error al detener el sensor:', error);
-      }
-    };
-
-    // Verificar si estamos en un dispositivo nativo
-    console.log('Plataforma:', Capacitor.getPlatform());
-    console.log('Es nativo:', Capacitor.isNativePlatform());
-  </script>
+    document.getElementById('accelX').textContent = '0.00';
+    document.getElementById('accelY').textContent = '0.00';
+    document.getElementById('accelZ').textContent = '0.00';
+    document.getElementById('rotAlpha').textContent = '0.00';
+    document.getElementById('rotBeta').textContent = '0.00';
+    document.getElementById('rotGamma').textContent = '0.00';
+  }
+</script>
 </body>
 </html>
