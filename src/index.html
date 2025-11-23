@@ -228,17 +228,22 @@
 
 <script src="capacitor.js"></script>
 <script>
+
+  // Plugins de Capacitor usados
   const { Camera } = Capacitor.Plugins;
   const { DeviceMotionEvent } = window;
   
+  // Variables para el sensor de movimiento
   let motionActive = false;
   let motionInterval = null;
 
+  // Función para tomar foto
   async function takePicture() {
     const button = document.getElementById('takePictureBtn');
     const preview = document.getElementById('photoPreview');
     const placeholder = document.getElementById('photoPlaceholder');
 
+    // Solicitar foto desde la cámara
     try {
       button.disabled = true;
       button.textContent = 'Abriendo cámara...';
@@ -252,6 +257,7 @@
         saveToGallery: true
       });
 
+      // Mostrar la foto en el preview
       preview.src = image.dataUrl;
       preview.classList.add('show');
       placeholder.style.display = 'none';
@@ -265,6 +271,7 @@
     }
   }
 
+  // Funciones para el sensor de movimiento
   function startMotion() {
     const startBtn = document.getElementById('startMotionBtn');
     const stopBtn = document.getElementById('stopMotionBtn');
@@ -281,37 +288,46 @@
     window.addEventListener('deviceorientation', handleOrientation);
   }
 
+  // Manejadores de eventos
   function handleMotion(event) {
+    // Verificar si el sensor está activo
     if (!motionActive) return;
     
+    // Actualizar datos de aceleración
     const acc = event.accelerationIncludingGravity;
     document.getElementById('accelX').textContent = (acc.x || 0).toFixed(2);
     document.getElementById('accelY').textContent = (acc.y || 0).toFixed(2);
     document.getElementById('accelZ').textContent = (acc.z || 0).toFixed(2);
   }
 
+  // Manejador de orientación
   function handleOrientation(event) {
     if (!motionActive) return;
     
+    // Actualizar datos de rotación
     document.getElementById('rotAlpha').textContent = (event.alpha || 0).toFixed(2);
     document.getElementById('rotBeta').textContent = (event.beta || 0).toFixed(2);
     document.getElementById('rotGamma').textContent = (event.gamma || 0).toFixed(2);
   }
 
+  // Función para detener el sensor de movimiento
   function stopMotion() {
     const startBtn = document.getElementById('startMotionBtn');
     const stopBtn = document.getElementById('stopMotionBtn');
     const status = document.getElementById('motionStatus');
 
+    // Detener el sensor
     motionActive = false;
     startBtn.disabled = false;
     stopBtn.disabled = true;
     status.textContent = 'Sensor detenido';
     status.className = 'status inactive';
 
+    // Remover los event listeners
     window.removeEventListener('devicemotion', handleMotion);
     window.removeEventListener('deviceorientation', handleOrientation);
 
+    // Resetear los valores mostrados
     document.getElementById('accelX').textContent = '0.00';
     document.getElementById('accelY').textContent = '0.00';
     document.getElementById('accelZ').textContent = '0.00';

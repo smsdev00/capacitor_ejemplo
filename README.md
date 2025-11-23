@@ -441,7 +441,7 @@ Use versionado semántico:
 
 Para reducir el tamaño del APK:
 
-```bash
+```bashDebug
 # Habilitar ProGuard en android/app/build.gradle
 buildTypes {
     release {
@@ -453,6 +453,10 @@ buildTypes {
 ```
 
 ---
+
+## COMPILACION APK DEBGUB Y COMO USAR CONSOLA CHROME CONECTANDO EL TELEFONO CON LA APK INSTALADA POR USB A LA PC
+Para poder acceder a la consola de desarrollador de chrome es necesario compilar la apk como debug, la re producción no permite usar la consola.
+
 
 ## Referencias Útiles
 
